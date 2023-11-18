@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule</title>
+    <style>
+        .parentContainerClass{
+            width: 800px;
+        }
+        .scheduleContainerClass{
+         
+            width: 100%;
+            display: table;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+        .headerClass{
+            text-align: center;
+            
+        }
+        div{
+           
+            
+        }
+        .rowClass div{
+
+/*             margin-left: 0.5rem;
+            margin-right: 0.5rem; */
+            
+            display: table-cell;
+
+
+        }
+        .rowClass{
+            display: table-row;
+            height: 1.5rem;
+            line-height: 1.5rem;
+            border-style: solid;
+            border-width: 1px 0px;
+        }
+        .tableHeaderRowClass{
+            font-size: large;
+        }
+        .timeCellClass{
+            width: 20%;
+            text-align: center;
+            border-right: 2px inset;
+        }
+        .nameCellClass{
+            width: 40%;
+            padding-left: 0.5rem;
+            border-right: 2px inset;
+        }
+        .enableCellClass{
+            width: 20%;
+            text-align: center;
+        }
+        .modalBackgroundClass{
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            opacity: 0.7;
+            background-color: black;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+        }
+        .modalWindowClass{
+            background-color: white;
+            width: 400px;
+            max-width: 100%;
+            border-radius: 0.5rem;
+
+        }
+        .modalWindowHeaderClass{
+            font-size: x-large;
+            text-align: center;
+            margin: 20px;
+        }
+        .modalWindowContainerClass{
+            margin: 20px;
+        }
+        .modalWindowContainerClass div{
+            margin: 20px;
+        }
+        .modalWindowFooterClass{
+            margin: 20px;
+            margin-left: 40px;
+        }
+        .modalWindowFooterClass input{
+           
+            margin-right: 10px;
+        }
+        label{
+            width: 130px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <script type="">
+        
+        let selectedEntryNames = new Set();
+        async function get_schedule() {
+            let url = "http://127.0.0.1:3000/get_schedule"
+            let response = await fetch(url);
+            let containerElement = document.getElementById("schedule_container");
+            let json;
+            if (response.ok) { 
+                json = await response.json();
+            } else {
+                alert("Ошибка HTTP: " + response.status);
+            }
+            for (let item of json){
+
+                let selectEl = document.createElement('input');
+                selectEl.setAttribute("type","checkbox");
+                selectEl.setAttribute("id",item.name + "_select");
+                selectEl.setAttribute("onchange","setSelectStatus(this)");
+
+                let rowEl = document.createElement('div');
+                rowEl.classList.add("rowClass");
+
+                let nameEl = document.createElement('div');
+                nameEl.classList.add("nameCellClass");
+
+                let startDateEl = document.createElement('div');
+                startDateEl.classList.add("timeCellClass");
+
+                let stopDateEl = document.createElement('div');
+                stopDateEl.classList.add("timeCellClass");
+
+                let enabledEl = document.createElement('div');
+                enabledEl.classList.add("enableCellClass");
+
+                let inputEl = document.createElement('input');
+                inputEl.setAttribute("type","checkbox");
+                inputEl.setAttribute("id",item.name + "_input");
+                inputEl.setAttribute("onchange","getInputStatus(this)");
+
+                let labelEl = document.createElement('label');
+                labelEl.setAttribute("for", item.name + "_input");
+                labelEl.setAttribute("id", item.name + "_label");
+                nameEl.innerHTML = item.name;
+
+                startDateEl.innerHTML = item.startTime;
+                stopDateEl.innerHTML = item.stopTime;
+                if (item.enabled){
+                    labelEl.innerHTML = "Enabled";
+                    inputEl.checked = true;
+                } else{
+                    labelEl.innerHTML = "Disabled";
+                    inputEl.checked = false;
+                }
+                //item.enabled ? labelEl.innerHTML = "Enabled" : labelEl.innerHTML = "Disabled";
+                enabledEl.appendChild(inputEl);
+                enabledEl.appendChild(labelEl);
+
+                rowEl.appendChild(selectEl);
+                rowEl.appendChild(nameEl);
+                rowEl.appendChild(startDateEl);
+                rowEl.appendChild(stopDateEl);
+                rowEl.appendChild(enabledEl);
+                
+                containerElement.appendChild(rowEl);
+            }
+        }
+
+        function getInputStatus(object){
+            let objectId = object.id;
+            let entryName = objectId.split('_');
+            let labelToChangeEl = document.getElementById(entryName[0] + "_label");
+            console.log(labelToChangeEl);
+            if (!labelToChangeEl) throw "Cant't find the label to change!";
+            object.checked ? labelToChangeEl.innerHTML = "Enabled" : labelToChangeEl.innerHTML = "Disabled";
+            console.log(object.id);
+            console.log(entryName[0]);
+        }
+
+        function responseIsValid(response){
+            return true;
+        }
+
+        function addSchedule(){
+            getModal();
+        }
+        function editSchedule() {
+            
+        }
+        async function removeSchedule() {
+            let url = "http://127.0.0.1:3000/delete_schedule_entry";
+            let method = "POST";
+            let body = JSON.stringify(Array.from(selectedEntryNames));
+            let containerElement = document.getElementById("schedule_container");
+            let params = {
+                method: method,
+                body: body
+            }
+            let response = await fetch(url, params);
+            if (response.ok){
+                //removeModal();
+                containerElement.innerHTML = "";
+                get_schedule()
+
+            }
+        }
+        function getModal(){
+            let modalWindow = document.getElementById("modal");
+            modalWindow.style.visibility = "visible";
+        }
+        function removeModal(){
+            let modalWindow = document.getElementById("modal");
+            modalWindow.style.visibility = "hidden";
+        }
+        function setSelectStatus(object) {
+            let objectId = object.id;
+            let entryName = objectId.split('_');
+            if (object.checked){
+                selectedEntryNames.add(entryName[0]);
+            } else{
+                let deleteStatus = selectedEntryNames.delete(entryName[0]);
+                if (!deleteStatus) throw "deselecting not selected element!!!";
+            }
+            
+        }
+
+        get_schedule();
+        
+        //}
+    </script>
+    <div id="parent_container" class="parentContainerClass">
+        <div id="headerEl" class="headerClass">
+            <h2>Silver radio recorder schedule</h2>
+        </div>
+
+        <div id="schedule_container" class="scheduleContainerClass">
+            <div class="rowClass tableHeaderRowClass">
+                <div class="selectColumnClass"></div>
+                <div class="nameCellClass">Name</div>
+                <div class="timeCellClass">Start time</div>
+                <div class="timeCellClass">Stop time</div>
+                <div class="enableCellClass">Enabled/Disabled</div>
+            </div>
+
+        </div>
+        <input type="button" value="Добавить задание" onclick="addSchedule()">
+        <input type="button" value="Изменить задание" onclick="editSchedule()">
+        <input type="button" value="Удалить задание" onclick="removeSchedule()">
+    </div>
+    <div id="modal" class="modalBackgroundClass">
+        <div class="modalWindowClass">
+            <form action="\set_schedule" method="post">
+                <div class="modalWindowHeaderClass">Schedule modification</div>
+                <div class="modalWindowContainerClass">
+                    <div class="modalScheduleNameClass">
+                        <label for="inputNameEl">Имя задания</label>
+                        <input id="inputNameEl" name="name" type="text">
+                    </div>
+                    <div class="modalScheduleTimeClass">
+                        <label for="startTimeInputEl">Время начала</label>
+                        <input id="startTimeInputEl" name="startTime" type="time">
+                    </div>
+                    <div class="modalScheduleTimeClass">
+                        <label for="stopTimeInputEl">Время окончания</label>
+                        <input id="stopTimeInputEl" name="stopTime" type="time">
+                    </div>
+                    <div class="modalScheduleEnableClass">
+                        <label for="enabledEl">Включено</label>
+                        <input id="enabledEl" name="enabled" type="checkbox">
+                    </div>
+                </div>
+                <div class="modalWindowFooterClass">
+                    <input type="submit" value="Сохранить" onclick="removeModal()">
+                    <input type="button" value="Отменить" onclick="removeModal()">
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+
+</body>
+</html>
