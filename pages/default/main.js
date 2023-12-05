@@ -321,7 +321,7 @@
 
         }
         function checkFirstLevel(data) {
-            if (data.name == ""){
+            if ((!data.name) || (data.name == "")) {
                 displayError("The name is empty!");
                 return false;
             } 
@@ -345,7 +345,7 @@
                 headers: headers,
                 body: body
             }
-            let url = "http://127.0.0.1:3000/set_schedule"
+            let url = "http://127.0.0.1:3000/add_schedule_entry"
             let response = await fetch(url, params);
             if (response.status != 204){
                 let errorText = await response.text();
@@ -359,7 +359,7 @@
                 alert("Не выбрано ни одного элемента расписания!")
                 return;
             }
-            const url = "http://127.0.0.1:3000/modify_schedule";
+            const url = "http://127.0.0.1:3000/modify_schedule_entry";
             const method = "POST";
             const headers = {'Content-Type': 'application/json;charset=utf-8'};
             const dataToSend = [data, entrysList];
