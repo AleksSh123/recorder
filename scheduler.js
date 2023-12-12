@@ -1,6 +1,7 @@
 //const { scheduler } = require("timers/promises");
 const validator = require('./validator.js');
 const recorder = require ('./recorder.js');
+const url = "https://silverrain.hostingradio.ru/silver128.mp3";
 
 let scheduleArray = [
     {
@@ -100,6 +101,74 @@ exports.removeScheduleEntry = function(body) {
     return "ok";
 }
 
+function startScheduler(schedule, url){
+    let currentTime = new Date();
+    let currentUnixtime = currentTime.getTime();
+
+    if (currentTime.getSeconds() == 0){
+        console.log("tick");
+    }
+
+    let startUnixTime;
+    let stopUnixtime;
+
+    for (let task of schedule){
+        //console.log(`task name ${task.name}, starts ${task.startTime}, stops ${task.stopTime}, enabled:${task.enabled}, started:${task.started}`);
+        if (task.enabled){
+            
+            if (!task.started){ //вычисляем актуальное время старта и стопа в текущие сутки
+                startUnixTime = getUnixTimeByTextTime(task.startTime);
+                stopUnixtime = getUnixTimeByTextTime(task.stopTime);
+                if (stopUnixtime < startUnixTime) stopUnixtime += 86400000;
+            } else{
+                startUnixTime = task.startUnixTime;
+                stopUnixtime = task.stopUnixTime;
+            }
+            //console.log(`startUnixTime:${startUnixTime}, currentUnixTime:${currentUnixtime}, stopUnixTime:${stopUnixtime}`)
+            if ((currentUnixtime > startUnixTime) && (currentUnixtime < stopUnixtime)){ //если время в заданном промежутке
+                if (task.started){ // и задание запущено
+                    if(!recorder.recordStarted){  //  проверяем
+                        throw "Error! unacceptable combination of  property 'started' and status of recorder";
+                    }
+                } else{ // и задание не запущено
+                    if (recorder.recordStarted){ //  проверяем
+                        throw "Error! unacceptable combination of  property 'started' and status of recorder";
+                    }
+                    console.log("scheduler: start recording!") // запускаем
+                    task.startUnixTime = startUnixTime; //фиксируем время фактического старта
+                    task.stopUnixTime = stopUnixtime; //и будущего  стопа
+                    console.log("recorder: lets get start!");
+                    recorder.startRecord(url,task.name); //команда на запись
+                    task.started = true;
+                }
+            } else { //если время не в диапазоне
+                if (task.started){ // и задание запущено
+                    if (!recorder.recordStarted){ //проверяем
+                        throw "Error! unacceptable combination of  property 'started' and status of recorder";
+                    }
+                    console.log("scheduler: stop record!");
+                    recorder.stopRecord(); //останавливаем и помечаем что задание остановлено
+                    task.started = false;
+                }
+
+            }
+
+        } else {
+            if (task.started){
+                if (!recorder.recordStarted){ //проверяем
+                    throw "Error! unacceptable combination of  property 'started' and status of recorder";
+                }
+                console.log("scheduler: stop record!");
+                recorder.stopRecord()  //останваливаем запись
+                task.started = false;
+            }
+
+        }
+
+    }
+
+}
+
 function timeRangesIsConflict(checkEntry,mode){
     for (let entry of scheduleArray){
         if (checkEntry.name == entry.name){
@@ -120,8 +189,8 @@ function namesCountExistInSchedule(entry){
 
 function getRange(entry){
     let response = [];
-    response[0] = recorder.getUnixTimeByShortTime(entry.startTime);
-    response[1] = recorder.getUnixTimeByShortTime(entry.stopTime);
+    response[0] = getUnixTimeByTextTime(entry.startTime);
+    response[1] = getUnixTimeByTextTime(entry.stopTime);
     if (response[1] < response[0]) response[1] += 86400000;
     return response;
 }
@@ -138,3 +207,19 @@ function rangesIsOverlapped(range1, range2){
         return false;
     }
 }
+
+function getUnixTimeByTextTime(timeString){
+    let parsed = timeString.match(/(\d+):(\d+)/);
+    let customHours = Number(parsed[1]);
+    let customMinutes = Number(parsed[2]);
+    let customSeconds = 0;
+    let currentTime = new Date();
+    currentTime.setHours(customHours);
+    currentTime.setMinutes(customMinutes);
+    currentTime.setSeconds(customSeconds);
+    //console.log(`scheduler: get time ${timeString}, got time ${currentTime}`);
+    let customCurrentUnixTime = currentTime.getTime();
+    return customCurrentUnixTime;
+}
+
+let timer = setInterval(startScheduler, 1000 ,scheduleArray, url);

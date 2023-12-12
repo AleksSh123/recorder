@@ -73,6 +73,11 @@
                 rowEl.appendChild(startDateEl);
                 rowEl.appendChild(stopDateEl);
                 rowEl.appendChild(enabledEl);
+
+                if (entry.started){
+                    rowEl.classList.add("recordOnClass");
+                };
+
                 
                 containerElement.appendChild(rowEl);
         }
@@ -99,7 +104,15 @@
             
             }
         }
-        
+        function removeElementsFromHTML(namesSet) {
+            const removedEntrysNames = Array.from(namesSet);
+            for(let name of removedEntrysNames){
+                let elementId = name + "Row";
+                let element = document.getElementById(elementId);
+                element.remove();
+
+            }
+        }
         function deselectSelectedRows(namesArray){
             for (let name of namesArray){
                 let selectEl = document.getElementById(name + "_select");
@@ -116,11 +129,6 @@
             //console.log(object.id);
             //console.log(entryName[0]);
         }
-
-
-
-  
-        
         
         function hideModal(){
             unDisplayError();
@@ -149,9 +157,6 @@
             }
             
         }
-   
- 
-
 
         function displayError(error) {
             let messageEl = document.getElementById("errorMessageElement");
@@ -165,8 +170,6 @@
             messageEl.innerText = "";
             messageEl.classList.remove("errorMessageClassDisplay");
         }
-
-
 
         function displaySchedule(schedule) {
             let containerElement = document.getElementById("schedule_container");
@@ -290,15 +293,7 @@
             let response = await fetch(url, params);
             return response;
         }
-        function removeElementsFromHTML(namesSet) {
-            const removedEntrysNames = Array.from(namesSet);
-            for(let name of removedEntrysNames){
-                let elementId = name + "Row";
-                let element = document.getElementById(elementId);
-                element.remove();
-
-            }
-        }
+        
         function removeNamesFromSelected(namesSet) {
             const removedEntrysNames = Array.from(namesSet);
             for(let name of removedEntrysNames){
@@ -307,7 +302,6 @@
             }
         }
 
-    
         function getInputData(){
             unDisplayError();
             const form = document.forms.inputNewEntry;
@@ -381,10 +375,26 @@
             let regexp = /(\d{2}):(\d{2})/;
             return regexp.test(textValue);
         }
-
+        async function getAndHighlightRecording(){
+            let schedule = await getSchedule();
+            for (let entry of schedule){
+                highlightEntry(entry);
+            }
+        }
+        function highlightEntry(entry){
+            let rowEl = document.getElementById(entry.name + "Row");
+            if (!rowEl) throw `cant find row element for ${entry.name}`;
+            if (entry.started){
+                rowEl.classList.add("recordOnClass");
+            } else {
+                rowEl.classList.remove("recordOnClass");
+            }
+            console.log("tick");
+        }
 
 
         openSchedule();
+        let updateTimer = setInterval(getAndHighlightRecording,1000);
 
         
         

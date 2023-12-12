@@ -1,14 +1,14 @@
-const http = require('node:http');
+//const http = require('node:http');
 const https = require('node:https');
 require ('node:buffer');
 const fs = require("fs");
 const PORT = 3001;
-let recordAllowed = true;
-let recordStarted = false;
-let startUnixTime;
-const url = "https://silverrain.hostingradio.ru/silver128.mp3";
-module.exports.getUnixTimeByShortTime = getUnixTimeByShortTime;
+module.exports.recordStarted = false;
+const filepathPrefix = "./records/";
+let stopRecord = false;
 
+//module.exports.getUnixTimeByTextTime = getUnixTimeByTextTime;
+/* 
 let schedule = [
     {
         startTime: "04:00",
@@ -29,22 +29,11 @@ let schedule = [
         name: "second",
         enabled: false
     }
-]
+] */
 
 //let timer = setInterval(getStart,1000);
 
-function getUnixTimeByShortTime(timeString){
-    let parsed = timeString.match(/(\d+):(\d+)/);
-    let customHours = Number(parsed[1]);
-    let customMinutes = Number(parsed[2]);
-    let customSeconds = 0;
-    let currentTime = new Date();
-    currentTime.setHours(customHours);
-    currentTime.setMinutes(customMinutes);
-    currentTime.setSeconds(customSeconds);
-    let customCurrentUnixTime = currentTime.getTime();
-    return customCurrentUnixTime;
-}
+
 
 function get2Digits(number){
     let result;
@@ -68,56 +57,11 @@ function getCurrentLongDate(){
     return result;
 }
 
-function getStart(){
-    let currentTime = new Date();
-    let currentUnixtime = currentTime.getTime();
-
-    if (currentTime.getSeconds() == 0){
-        console.log("tick");
-    }
 
 
-    let startUnixTime;
-    let stopUnixtime;
-
-    for (let task of schedule){
-        if (task.enabled){
-            if (!task.started){
-                startUnixTime = getUnixTimeByShortTime(task.startTime);
-                stopUnixtime = getUnixTimeByShortTime(task.stopTime);
-                if (stopUnixtime < startUnixTime) stopUnixtime += 86400000;
-            } else{
-                startUnixTime = task.startUnixTime;
-                stopUnixtime = task.stopUnixTime;
-            }
-            if ((currentUnixtime > startUnixTime) && (currentUnixtime < stopUnixtime)){ //если время в заданном промежутке
-                if((!task.started) && (recordAllowed)){  //если задание не стартовано и запись не идет
-                    console.log("start!")
-                    recordAllowed = false;  //разрешаем запись
-                    task.startUnixTime = startUnixTime;
-                    task.stopUnixTime = stopUnixtime;
-                    getRadio (); //команда на запись
-                    task.started = true;
-                } else {
-                    if ((task.started && !recordAllowed) ||
-                     (!task.started && recordAllowed)) throw "Error! unacceptable combination of internal parameters";
-                };
- 
-
-            } else{ //если время вне заданного промежутка
-                if (task.started){
-                    task.started = false; //помечаем в расписании
-                    recordAllowed = true;  //останваливаем запись
-                } 
-    
-            }
-        }
-
-    }
-
-}
-
-function getRadio(){
+exports.startRecord = function (url, taskName){
+    let chunk;
+    stopRecord = false;
     https.get(url, res => {
         let data = [];
         let length = 0;
@@ -125,43 +69,43 @@ function getRadio(){
         console.log('Status Code:', res.statusCode);
         console.log('Date in Response header:', headerDate);
         let i = 0;
-        recordStarted = true;
+        module.exports.recordStarted = true;
         res.on('data', (chunk) => {
           data.push(chunk);
           let currentDate = new Date();
           length += chunk.length;
           i++;
           if ((i % 500) == 0){
-            console.log (`Recording ${i} part`);
+            console.log (`recorder: recording ${i} part`);
             console.log (currentDate);
-            
           }
-          
-          let currentUnixtime = currentDate.getTime();
-          if (recordAllowed){
+          if (stopRecord){
               res.destroy();
-              console.log("Overall length is " + length);
-              let fileName = `${getCurrentLongDate()}_silver.mp3`
-               console.log("Writing file " + fileName);
+              console.log("recorder: Overall length is " + length);
+              let fileName = `${getCurrentLongDate()}_${taskName}.mp3`
+               console.log("recorder: Writing file " + fileName);
               const buffer = Buffer.concat(data,length);
-              fs.writeFile('/Users/Alex/Documents/DEVELOPMENT/Node/' + fileName, buffer, (err) => {
+              fs.writeFile(filepathPrefix + fileName, buffer, (err) => {
                   if (err) {
                       console.error(err);
-                      recordStarted = false;
+                      module.exports.recordStarted = false;
                       return;
                   }
-                  console.log("file written successfully");
-                  recordStarted = false;
+                  console.log("recorder: file written successfully");
+                  module.exports.recordStarted = false;
               });
           };
         });
       
         res.on('end', () => {
-          console.log('Response ended: ');
+          console.log('recorder: Response ended: ');
+          module.exports.recordStarted = false;
         });
       
       });
     }
 
-
+exports.stopRecord = function (){
+    stopRecord = true;
+}
  
