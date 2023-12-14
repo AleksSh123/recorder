@@ -1,9 +1,25 @@
 //const { scheduler } = require("timers/promises");
 const validator = require('./validator.js');
 const recorder = require ('./recorder.js');
+const cfgio = require('./cfgio.js');
 const url = "https://silverrain.hostingradio.ru/silver128.mp3";
+const cfgFile = "./schedule.cfg";
+let scheduleArray = [];
 
-let scheduleArray = [
+
+let readStatus = cfgio.readFile(cfgFile);
+if (Array.isArray(readStatus)){
+    if (readStatus[0] == "ok"){
+        scheduleArray = readStatus[1];
+    } else{
+        throw readStatus[0];
+    }
+} else {
+    throw readStatus;
+}
+
+
+/* let scheduleArray = [
     {
         startTime: "04:00",
         startUnixTime: 0,
@@ -22,7 +38,11 @@ let scheduleArray = [
         started: false,
         name: "second",
         enabled: false
-    }];
+    }]; */
+
+//let writeStatus =  fileio.writeFile(scheduleArray, cfgFile);
+//if (writeStatus[0] != "ok") debugger;
+
 exports.getSchedule = function() {
     const scheduleJSON = JSON.stringify(scheduleArray);
     const result = ["ok", scheduleJSON]
@@ -46,7 +66,13 @@ exports.addScheduleEntry = function(body) {
         enabled = newEntry.enabled
     };
     scheduleArray.push(newFormattedEntry);
-    return "ok"
+    let writeStatus = cfgio.writeFile(cfgFile, scheduleArray);
+    if (writeStatus[0] == "ok"){
+        return "ok";
+    } else { 
+        throw writeStatus[0];
+    }
+    
 }
 exports.modifyScheduleEntry = function(body) {
     //const modifyDataArray = JSON.parse(body);
@@ -69,7 +95,12 @@ exports.modifyScheduleEntry = function(body) {
                 }
             }
         }
-        return "ok";
+        let writeStatus = cfgio.writeFile(cfgFile, scheduleArray);
+        if (writeStatus[0] == "ok"){
+            return "ok";
+        } else { 
+            throw writeStatus[0];
+        }
     }
     if (namesArray.length >1){
         let checkFieldsIsCorrect = validator.checkEnabledPropOnly(inputData);
@@ -82,9 +113,13 @@ exports.modifyScheduleEntry = function(body) {
                     }
                 }
             }
-
         }
-        return "ok";
+        let writeStatus = cfgio.writeFile(cfgFile, scheduleArray);
+        if (writeStatus[0] == "ok"){
+            return "ok";
+        } else { 
+            throw writeStatus[0];
+        }
     }
 }
 exports.removeScheduleEntry = function(body) {
@@ -98,7 +133,12 @@ exports.removeScheduleEntry = function(body) {
         if (findedIndex == -1) return `entry ${name} not found`
         scheduleArray.splice(findedIndex,1); 
     }
-    return "ok";
+    let writeStatus = cfgio.writeFile(cfgFile, scheduleArray);
+    if (writeStatus[0] == "ok"){
+        return "ok";
+    } else { 
+        throw writeStatus[0];
+    }
 }
 
 function startScheduler(schedule, url){
