@@ -1,0 +1,22 @@
+.parentContainerClass{
+    width: 800px;
+    border: solid 1px;
+    text-align: center;
+
+}
+.recordListContainerClass{
+    border: solid 1px;
+}
+.rowClass{
+    display: flex;
+    height: 1.5rem;
+    line-height: 1.5rem;
+    border-style: solid;
+    border-width: 1px 0px;
+}
+.rowClass div{
+        
+        display: inline-block;
+        margin-left: 1rem;
+        margin-right: 1rem;
+}

@@ -59,7 +59,7 @@ function getCurrentLongDate(){
 
 
 
-exports.startRecord = function (url, taskName){
+exports.startRecord = function (url, task){
     let chunk;
     stopRecord = false;
     https.get(url, res => {
@@ -71,29 +71,46 @@ exports.startRecord = function (url, taskName){
         let i = 0;
         module.exports.recordStarted = true;
         res.on('data', (chunk) => {
-          data.push(chunk);
-          let currentDate = new Date();
-          length += chunk.length;
-          i++;
-          if ((i % 500) == 0){
-            console.log (`recorder: recording ${i} part`);
-            console.log (currentDate);
-          }
-          if (stopRecord){
-              res.destroy();
-              console.log("recorder: Overall length is " + length);
-              let fileName = `${getCurrentLongDate()}_${taskName}.mp3`
-               console.log("recorder: Writing file " + fileName);
-              const buffer = Buffer.concat(data,length);
-              fs.writeFile(filepathPrefix + fileName, buffer, (err) => {
-                  if (err) {
-                      console.error(err);
-                      module.exports.recordStarted = false;
-                      return;
-                  }
-                  console.log("recorder: file written successfully");
-                  module.exports.recordStarted = false;
-              });
+            data.push(chunk);
+            let currentDate = new Date();
+            length += chunk.length;
+            i++;
+            if ((i % 500) == 0){
+                console.log (`recorder: recording ${i} part`);
+                console.log (currentDate);
+            }
+            if (stopRecord){
+                res.destroy();
+                console.log("recorder: Overall length is " + length);
+                let baseName = `${getCurrentLongDate()}_${task.name}`;
+                let mp3FileName = `${baseName}.mp3`;
+                console.log("recorder: Writing file " + mp3FileName);
+                const buffer = Buffer.concat(data,length);
+                fs.writeFile(filepathPrefix + mp3FileName, buffer, (err) => {
+                    if (err) {
+                        console.error(err);
+                        module.exports.recordStarted = false;
+                        return;
+                    }
+                    console.log("recorder: mp3file written successfully");
+                    module.exports.recordStarted = false;
+                    let metafileName = `${baseName}.meta`;
+                    const currentDate = new Date();
+                    const currentUnixtime = currentDate.getTime()
+                    const metaData = JSON.stringify({
+                        taskName: task.name,
+                        taskStartUnixTime: task.startUnixTime,
+                        taskStopUnixTime: currentUnixtime
+                    })
+                    fs.writeFile(filepathPrefix + metafileName, metaData, (err) => {
+                        if (err) {
+                            console.error(err);
+                            return;
+                        }
+                        console.log("recorder: metafile written successfully");
+                    });
+                });
+
           };
         });
       

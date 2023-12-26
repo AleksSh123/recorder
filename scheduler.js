@@ -40,8 +40,7 @@ if (Array.isArray(readStatus)){
         enabled: false
     }]; */
 
-//let writeStatus =  fileio.writeFile(scheduleArray, cfgFile);
-//if (writeStatus[0] != "ok") debugger;
+
 
 exports.getSchedule = function() {
     const scheduleJSON = JSON.stringify(scheduleArray);
@@ -178,7 +177,7 @@ function startScheduler(schedule, url){
                     task.startUnixTime = startUnixTime; //фиксируем время фактического старта
                     task.stopUnixTime = stopUnixtime; //и будущего  стопа
                     console.log("recorder: lets get start!");
-                    recorder.startRecord(url,task.name); //команда на запись
+                    recorder.startRecord(url,task); //команда на запись
                     task.started = true;
                 }
             } else { //если время не в диапазоне

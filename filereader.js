@@ -1,22 +1,26 @@
 const fs = require('fs');
-const defaultPrefix = "pages/default";
+const pagesPrefix = "pages";
 
-exports.getFile = function (filePath, response){
+
+exports.getFile = function (filePath, mode, response){
 
 
     //const basePath = "";
     let regexp_htm = /\.(txt|htm|html)$/gi;
     let regexp_css = /\.css$/gi;
     let regexp_js = /\.js$/gi;
+    let regexp_mp3 = /\.mp3$/gi;
     //let options;
     let headers = {
         'Content-Type': 'image/png'
     }
     let responseCode;
-    filePath = defaultPrefix + filePath;
-    console.log("request path filreader: " + filePath);
+    if (mode == "pages"){
+        filePath = pagesPrefix + filePath;
+    }
+    console.debug("request path filereader: " + filePath);
     let test = fs.existsSync(filePath)
-    console.log("filreader: path exists: " + test);
+    console.log("filereader: path exists: " + test);
     if (!fs.existsSync(filePath)){
         filePath = "pages/not_found/not_found.html";
         responseCode = 404;
@@ -34,6 +38,9 @@ exports.getFile = function (filePath, response){
         if (regexp_js.test(filePath)){
             headers['Content-Type'] = 'application/javascript';
         }
+        if (regexp_mp3.test(filePath)){
+            headers['Content-Type'] = 'audio/mpeg3';
+        }
     }
     console.log("filereader final path: " + filePath);
     fs.readFile(filePath, (err, data) => {
@@ -41,7 +48,7 @@ exports.getFile = function (filePath, response){
             console.log(err);
             response.writeHead(500);
             response.end();
-            throw err;
+            //throw err;
         } 
         response.writeHead(responseCode, headers);
         //console.log(data);
