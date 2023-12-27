@@ -4,7 +4,7 @@
 
 
         async function getSchedule() {
-            let url = "http://127.0.0.1:3000/get_schedule"
+            let url = location.origin + "/get_schedule"
             let response = await fetch(url);
             
             let json;
@@ -281,7 +281,7 @@
             }
         }
         async function removeEntryFromServer(namesSet) {
-            let url = "http://127.0.0.1:3000/delete_schedule_entry";
+            let url = location.origin + "/delete_schedule_entry";
             let method = "POST";
             let entryNamesToRemove = Array.from(namesSet)
             let body = JSON.stringify(entryNamesToRemove);
@@ -339,7 +339,7 @@
                 headers: headers,
                 body: body
             }
-            let url = "http://127.0.0.1:3000/add_schedule_entry"
+            let url = location.origin + "/add_schedule_entry"
             let response = await fetch(url, params);
             if (response.status != 204){
                 let errorText = await response.text();
@@ -353,7 +353,7 @@
                 alert("Не выбрано ни одного элемента расписания!")
                 return;
             }
-            const url = "http://127.0.0.1:3000/modify_schedule_entry";
+            const url = location.origin + "/modify_schedule_entry";
             const method = "POST";
             const headers = {'Content-Type': 'application/json;charset=utf-8'};
             const dataToSend = [data, entrysList];
