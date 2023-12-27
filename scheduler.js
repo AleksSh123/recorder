@@ -5,6 +5,8 @@ const cfgio = require('./cfgio.js');
 const url = "https://silverrain.hostingradio.ru/silver128.mp3";
 const cfgFile = "./schedule.cfg";
 let scheduleArray = [];
+let clientTzOffset = -7;
+const serverTzOffset = (new Date().getTimezoneOffset()) / 60;
 
 
 let readStatus = cfgio.readFile(cfgFile);
@@ -248,6 +250,7 @@ function rangesIsOverlapped(range1, range2){
 }
 
 function getUnixTimeByTextTime(timeString){
+    const currentTzOffset = clientTzOffset - serverTzOffset;
     let parsed = timeString.match(/(\d+):(\d+)/);
     let customHours = Number(parsed[1]);
     let customMinutes = Number(parsed[2]);
@@ -256,6 +259,7 @@ function getUnixTimeByTextTime(timeString){
     currentTime.setHours(customHours);
     currentTime.setMinutes(customMinutes);
     currentTime.setSeconds(customSeconds);
+    currentTime.setHours(currentTime.getHours() + currentTzOffset);
     //console.log(`scheduler: get time ${timeString}, got time ${currentTime}`);
     let customCurrentUnixTime = currentTime.getTime();
     return customCurrentUnixTime;
