@@ -8,7 +8,14 @@ exports.getRecordsFilesList = function(){
     let regexp_mp3 = /\.mp3$/gi;
     let regexp_meta = /\.meta$/gi;
     let path = "./" + defaultPrefix; 
-    let dirContent = fs.readdirSync(path);
+    let dirContent;
+    try{
+        dirContent = fs.readdirSync(path);
+    } catch(err){
+        console.log(err);
+        return err;
+    }
+   
     console.dir(dirContent);
     for (let file of dirContent){
         if (regexp_mp3.test(file)){
