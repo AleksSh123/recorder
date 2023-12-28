@@ -9,8 +9,8 @@ let server = new http.Server(function(request,response){
     let url;
     console.log("Url: " + request.url);
     console.log("Тип запроса: " + request.method);
-    console.log("Все заголовки");
-    console.dir(request.headers);
+    //console.log("Все заголовки");
+    //console.dir(request.headers);
     if (request.method == 'POST'){
         request.on('data', (chunk) => {
             chunkArray.push(chunk.toString());

@@ -394,7 +394,7 @@
 
 
         openSchedule();
-        let updateTimer = setInterval(getAndHighlightRecording,1000);
+        let updateTimer = setInterval(getAndHighlightRecording,2000);
 
         
         
