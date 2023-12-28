@@ -165,7 +165,7 @@ function startScheduler(schedule, url){
                 startUnixTime = task.startUnixTime;
                 stopUnixtime = task.stopUnixTime;
             }
-            //console.log(`startUnixTime:${startUnixTime}, currentUnixTime:${currentUnixtime}, stopUnixTime:${stopUnixtime}`)
+            console.log(`startUnixTime:${startUnixTime}, currentUnixTime:${currentUnixtime}, stopUnixTime:${stopUnixtime}`)
             if ((currentUnixtime > startUnixTime) && (currentUnixtime < stopUnixtime)){ //если время в заданном промежутке
                 if (task.started){ // и задание запущено
                     if(!recorder.recordStarted){  //  проверяем
@@ -253,6 +253,10 @@ function getUnixTimeByTextTime(timeString){
     const currentTzOffset = clientTzOffset - serverTzOffset;
     let parsed = timeString.match(/(\d+):(\d+)/);
     let customHours = Number(parsed[1]);
+    //customHours += currentTzOffset;
+    //if (customHours < 0){
+//	customHours += 24;
+//    };
     let customMinutes = Number(parsed[2]);
     let customSeconds = 0;
     let currentTime = new Date();
@@ -260,7 +264,10 @@ function getUnixTimeByTextTime(timeString){
     currentTime.setMinutes(customMinutes);
     currentTime.setSeconds(customSeconds);
     currentTime.setHours(currentTime.getHours() + currentTzOffset);
-    //console.log(`scheduler: get time ${timeString}, got time ${currentTime}`);
+    console.log(`settedTime: ${currentTime}`);
+    console.log(`currentTzOffset: ${currentTzOffset}`);
+    console.log(`scheduler: get time ${timeString}, got time ${currentTime}`);
+    console.log(`Current time ${new Date()}`);
     let customCurrentUnixTime = currentTime.getTime();
     return customCurrentUnixTime;
 }
