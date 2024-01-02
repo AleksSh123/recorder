@@ -12,6 +12,10 @@
     text-align: center;
     
 }
+.navigationClass{
+    padding-left: 1rem;
+    padding-bottom: 0.5rem;
+}
 
 .rowClass div{
 

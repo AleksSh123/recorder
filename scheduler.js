@@ -176,7 +176,8 @@ function startScheduler(schedule, url){
                         throw "Error! unacceptable combination of  property 'started' and status of recorder";
                     }
                     console.log("scheduler: start recording!") // запускаем
-                    task.startUnixTime = startUnixTime; //фиксируем время фактического старта
+                    
+                    task.startUnixTime = currentUnixtime; //фиксируем время фактического старта
                     task.stopUnixTime = stopUnixtime; //и будущего  стопа
                     console.log("recorder: lets get start!");
                     recorder.startRecord(url,task); //команда на запись

@@ -48,7 +48,8 @@ function get2Digits(number){
 function getCurrentLongDate(){
     const currentTime = new Date();
     const year = String(currentTime.getFullYear());
-    const month = get2Digits(currentTime.getMonth());
+    let month = get2Digits(currentTime.getMonth());
+    month++;
     const date = get2Digits(currentTime.getDate());
     const hours = get2Digits(currentTime.getHours());
     const minutes = get2Digits(currentTime.getMinutes());
@@ -96,11 +97,14 @@ exports.startRecord = function (url, task){
                     module.exports.recordStarted = false;
                     let metafileName = `${baseName}.meta`;
                     const currentDate = new Date();
-                    const currentUnixtime = currentDate.getTime()
+                    const currentUnixtime = currentDate.getTime();
+                    const mp3FileStats = fs.statSync(filepathPrefix + mp3FileName);
+                    //console.log(mp3fileSize);
                     const metaData = JSON.stringify({
                         taskName: task.name,
                         taskStartUnixTime: task.startUnixTime,
-                        taskStopUnixTime: currentUnixtime
+                        taskStopUnixTime: currentUnixtime,
+                        taskMp3FileSize: mp3FileStats.size
                     })
                     fs.writeFile(filepathPrefix + metafileName, metaData, (err) => {
                         if (err) {

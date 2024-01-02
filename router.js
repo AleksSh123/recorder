@@ -1,6 +1,7 @@
 const fileReader = require('./filereader.js');
 const scheduler = require('./scheduler.js');
 const recordsFileReader = require('./recordsfilereader.js');
+const recordsFileDeleter = require('./recordsfiledeleter.js')
 exports.route = function (url, method, body,request,response){
     console.log("router url:" + url);
     console.log("router method: " + method);
@@ -91,6 +92,19 @@ exports.route = function (url, method, body,request,response){
                 fileReader.getFile(downloadPath, "downloads", response);
             }
             break; 
+        case "/delete_files":
+            console.log("Delete files section");
+            if (method == "POST"){
+                let result = recordsFileDeleter.deleteRecord(body);
+                if (result == "ok"){
+                    response.writeHead(204);
+                    response.end();
+                } else {
+                    response.writeHead(400,{'Content-Type': 'text/plain'});
+                    response.end(result);
+                }
+            }
+            break;
         default:
             if (!isPathWithFilename(url)){  //секция для страничек - view
                 url = url + "index.html";

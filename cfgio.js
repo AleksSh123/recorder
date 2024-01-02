@@ -8,10 +8,14 @@ exports.readFile = function (filePath){
         let data = fs.readFileSync(filePath);
         try{
             result[1] = JSON.parse(data);
+            for(let entry of result[1]){  //игнорируем флаг started при чтении конфигурации
+                entry.started = false;
+            }
             result[0] = "ok";
         }catch (err){
             result[0] = err;
         }finally{
+
             return result;
         }
     } else {
