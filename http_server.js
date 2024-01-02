@@ -11,6 +11,10 @@ let server = new http.Server(function(request,response){
     console.log("Тип запроса: " + request.method);
     console.log("Все заголовки");
     console.dir(request.headers);
+    //console.log("request:");
+    //console.dir(request);
+    console.log("request ip is:");
+    console.log(request.socket.remoteAddress);
     if (request.method == 'POST'){
         request.on('data', (chunk) => {
             chunkArray.push(chunk.toString());

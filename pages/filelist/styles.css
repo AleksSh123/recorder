@@ -16,11 +16,11 @@
 }
 .headerRowClass{
     display: grid;
-    grid-template-columns: 20px 7fr 10fr 7fr 14fr 6fr;
+    grid-template-columns: 20px 7fr 10fr 7fr 14fr 7fr;
     min-height: auto;
     line-height: 1.5rem;
     border-style: solid;
-    border-width: 1px 0px 0px;
+    border-width: 1px 0px 1px;
 }
 .headerRowClass div{
         
@@ -31,11 +31,11 @@
 }
 .rowClass{
     display: grid;
-    grid-template-columns: 20px 7fr 10fr 7fr 14fr 6fr;
+    grid-template-columns: 20px 7fr 10fr 7fr 14fr 7fr;
     min-height: auto;
     line-height: 1.5rem;
     border-style: solid;
-    border-width: 1px 0px 0px;
+    border-width: 0px 0px 1px;
 }
 .rowClass div{
         
