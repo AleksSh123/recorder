@@ -254,17 +254,18 @@ function getUnixTimeByTextTime(timeString){
     const currentTzOffset = clientTzOffset - serverTzOffset;
     let parsed = timeString.match(/(\d+):(\d+)/);
     let customHours = Number(parsed[1]);
-    //customHours += currentTzOffset;
-    //if (customHours < 0){
-//	customHours += 24;
-//    };
+    customHours += currentTzOffset;
+    if (customHours < 0){
+	customHours += 24;
+    };
     let customMinutes = Number(parsed[2]);
     let customSeconds = 0;
     let currentTime = new Date();
     currentTime.setHours(customHours);
     currentTime.setMinutes(customMinutes);
     currentTime.setSeconds(customSeconds);
-    currentTime.setHours(currentTime.getHours() + currentTzOffset);
+    
+    //currentTime.setHours(currentTime.getHours() + currentTzOffset);
 /*     console.log(`settedTime: ${currentTime}`);
     console.log(`currentTzOffset: ${currentTzOffset}`);
     console.log(`scheduler: get time ${timeString}, got time ${currentTime}`);

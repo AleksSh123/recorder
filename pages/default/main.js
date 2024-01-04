@@ -315,11 +315,16 @@
 
         }
         function checkFirstLevel(data) {
+            let regexp_space = /\s/g;
             if ((!data.name) || (data.name == "")) {
                 displayError("The name is empty!");
                 return false;
             } 
-            
+            if(regexp_space.test(data.name)){
+                displayError("The name has one or more spaces!")
+                return false;
+            }
+
             if ((!isTime(data.startTime)) || (!isTime(data.stopTime))) {
                 displayError("Start or/and stop time is absent");
                 return false;
