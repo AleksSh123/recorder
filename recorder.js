@@ -48,8 +48,7 @@ function get2Digits(number){
 function getCurrentLongDate(){
     const currentTime = new Date();
     const year = String(currentTime.getFullYear());
-    let month = get2Digits(currentTime.getMonth());
-    month++;
+    const month = get2Digits(currentTime.getMonth() + 1);
     const date = get2Digits(currentTime.getDate());
     const hours = get2Digits(currentTime.getHours());
     const minutes = get2Digits(currentTime.getMinutes());

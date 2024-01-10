@@ -8,6 +8,7 @@ let server = new http.Server(function(request,response){
     let body;
     let url;
     console.log("Url: " + request.url);
+    console.log("decoded url: " + decodeURI(request.url));
     console.log("Тип запроса: " + request.method);
     console.log("Все заголовки");
     console.dir(request.headers);
@@ -46,7 +47,7 @@ let server = new http.Server(function(request,response){
         });
 
     } else {
-        router.route(request.url, request.method, null, request, response);
+        router.route(decodeURI(request.url), request.method, null, request, response);
     }
 
 
