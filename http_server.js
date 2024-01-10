@@ -15,6 +15,20 @@ let server = new http.Server(function(request,response){
     //console.dir(request);
     console.log("request ip is:");
     console.log(request.socket.remoteAddress);
+    const cookieHeader = request.headers?.cookie;
+    console.log("coockies is:");
+    console.log(cookieHeader);
+    console.log("parsed coockies:");
+    console.log(getCoockies(request));
+    let coockies = getCoockies(request);
+        if (coockies){
+        console.log(`coockies.token: ${coockies.token}`);
+        if (coockies.token != "123456"){
+            response.writeHead(403);
+            response.end("403 Unathorized");
+        }
+    } 
+
     if (request.method == 'POST'){
         request.on('data', (chunk) => {
             chunkArray.push(chunk.toString());
@@ -37,6 +51,22 @@ let server = new http.Server(function(request,response){
 
 
 })
+function getCoockies(request){
+    
+    const cookieHeader = request.headers?.cookie;
+    if (cookieHeader){
+        let result = {};
+        const coockiesStrArr = cookieHeader.split(";");
+        for (let coockieString of coockiesStrArr){
+            coockieParsed = coockieString.split("=");
+            result[coockieParsed[0].trim()] = coockieParsed[1].trim();
+        }
+        return result;
+    } else{
+        return false;
+    }
+
+}
 
 
 server.listen(3000);

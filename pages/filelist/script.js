@@ -1,6 +1,13 @@
 let flParentContainerEl = document.getElementById("recordListContainer");
 let selectedEntryNames = new Set();
 const url = "/getFilelist";
+/* let date = new Date();
+date.setMinutes(date.getMinutes() + 3 ); */
+//console.log(date.toUTCString());
+//document.cookie = "token=123456; path=/";
+//document.cookie = "token1=000000";
+
+
 drawRecordList();
 
 async function getList(){

@@ -16,7 +16,7 @@ exports.getRecordsFilesList = function(){
         return err;
     }
    
-    console.dir(dirContent);
+    //console.dir(dirContent);
     for (let file of dirContent){
         if (regexp_mp3.test(file)){
             const metaFilename = file.replace(regexp_mp3, ".meta");
