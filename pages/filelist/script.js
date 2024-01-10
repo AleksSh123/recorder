@@ -26,8 +26,7 @@ async function drawRecordList(){
 function unixToFriendlyDate(unixTime){
     let date = new Date(unixTime);
     let year = date.getFullYear();
-    let month = to2Digits(date.getMonth());
-    month++;
+    let month = to2Digits(date.getMonth() + 1);
     let day = to2Digits(date.getDate());
     let hours = to2Digits(date.getHours());
     let minutes = to2Digits(date.getMinutes());
@@ -73,10 +72,15 @@ function addElement(entry, containerElement){
 
         let filenameEl = document.createElement('div');
         filenameEl.id = id + "-filenamecell";
-        let filenameRefEl = document.createElement('a');
-        filenameRefEl.href = location.origin + "/downloads/" + entry.filename;
-        filenameRefEl.innerText = entry.filename;
-        filenameEl.appendChild(filenameRefEl);
+        //let filenameRefEl = document.createElement('a');
+        //filenameRefEl.href = location.origin + "/downloads/" + entry.filename;
+        //filenameRefEl.innerText = entry.filename;
+        //filenameEl.appendChild(filenameRefEl);
+
+
+        let downloadLinkEl = document.createElement('a');
+        downloadLinkEl.href = location.origin + "/downloads/" + entry.filename;
+        downloadLinkEl.innerText = "\u2B07";
 
         let sizeEl = document.createElement("div");
         sizeEl.id = id + "-size";
@@ -89,6 +93,8 @@ function addElement(entry, containerElement){
         //stopDateEl.innerHTML = unixToFriendlyDate(entry.taskStopUnixTime);
         stopDateEl.innerHTML = getDuration(entry.taskStartUnixTime, entry.taskStopUnixTime);
 
+        filenameEl.innerHTML = entry.filename;
+
         sizeEl.innerHTML = getFriendlySize(entry.taskMp3FileSize);
 
         rowEl.appendChild(selectEl);
@@ -96,6 +102,7 @@ function addElement(entry, containerElement){
         rowEl.appendChild(startDateEl);
         rowEl.appendChild(stopDateEl);
         rowEl.appendChild(filenameEl);
+        rowEl.appendChild(downloadLinkEl);
         rowEl.appendChild(sizeEl);
 
         containerElement.appendChild(rowEl);

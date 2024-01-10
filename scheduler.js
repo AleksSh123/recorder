@@ -3,22 +3,25 @@ const validator = require('./validator.js');
 const recorder = require ('./recorder.js');
 const cfgio = require('./cfgio.js');
 const url = "https://silverrain.hostingradio.ru/silver128.mp3";
+const fs = require('node:fs');
 const cfgFile = "./schedule.cfg";
 let scheduleArray = [];
 let clientTzOffset = -7;
 const serverTzOffset = (new Date().getTimezoneOffset()) / 60;
 
-
-let readStatus = cfgio.readFile(cfgFile);
-if (Array.isArray(readStatus)){
-    if (readStatus[0] == "ok"){
-        scheduleArray = readStatus[1];
-    } else{
-        throw readStatus[0];
+if (fs.existsSync(cfgFile)){
+    let readStatus = cfgio.readFile(cfgFile);
+    if (Array.isArray(readStatus)){
+        if (readStatus[0] == "ok"){
+            scheduleArray = readStatus[1];
+        } else{
+            throw readStatus[0];
+        }
+    } else {
+        throw readStatus;
     }
-} else {
-    throw readStatus;
-}
+} 
+
 
 
 /* let scheduleArray = [
@@ -239,11 +242,11 @@ function getRange(entry){
 
 function rangesIsOverlapped(range1, range2){
 
-    if (((range1[0] >= range2[0]) && (range1[0] <= range2[1])) ||
-    ((range1[1] >= range2[0]) && (range1[1] <= range2[1]))) {
+    if (((range1[0] > range2[0]) && (range1[0] < range2[1])) ||
+    ((range1[1] > range2[0]) && (range1[1] < range2[1]))) {
         return true;
-    } else if(((range2[0] >= range1[0]) && (range2[0] <= range1[1])) ||
-     ((range2[1] >= range1[0]) && (range2[1] <= range1[1]))){
+    } else if(((range2[0] > range1[0]) && (range2[0] < range1[1])) ||
+     ((range2[1] > range1[0]) && (range2[1] < range1[1]))){
         return true;
     } else {
         return false;

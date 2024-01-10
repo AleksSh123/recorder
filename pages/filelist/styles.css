@@ -16,7 +16,7 @@
 }
 .headerRowClass{
     display: grid;
-    grid-template-columns: 20px 7fr 10fr 7fr 14fr 7fr;
+    grid-template-columns: 20px 7fr 10fr 7fr 14fr 20px 7fr;
     min-height: auto;
     line-height: 1.5rem;
     border-style: solid;
@@ -25,13 +25,14 @@
 .headerRowClass div{
         
     display: inline-flex;
-    margin-left: 1rem;
-    margin-right: 1rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
     align-items: center;
+
 }
 .rowClass{
     display: grid;
-    grid-template-columns: 20px 7fr 10fr 7fr 14fr 7fr;
+    grid-template-columns: 20px 7fr 10fr 7fr 14fr 20px 7fr;
     min-height: auto;
     line-height: 1.5rem;
     border-style: solid;
@@ -40,7 +41,9 @@
 .rowClass div{
         
     display: inline-flex;
-    margin-left: 1rem;
-    margin-right: 1rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
     align-items: center;
+
+    word-break: break-word;
 }

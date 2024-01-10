@@ -42,31 +42,35 @@
 
                 let enabledEl = document.createElement('div');
                 enabledEl.classList.add("enableCellClass");
+                let enabledSpanEl = document.createElement("span");
+                enabledSpanEl.id = entry.name + "_enabledcell";
+                enabledEl.appendChild(enabledSpanEl);
+
+                //let inputEl = document.createElement('input');
+                //inputEl.setAttribute("type","checkbox");
+                //inputEl.setAttribute("id",entry.name + "_input");
+                //inputEl.setAttribute("onchange","setInputLabelStatus(this)");
 
 
-                let inputEl = document.createElement('input');
-                inputEl.setAttribute("type","checkbox");
-                inputEl.setAttribute("id",entry.name + "_input");
-                inputEl.setAttribute("onchange","setInputLabelStatus(this)");
+                //let labelEl = document.createElement('label');
+                //labelEl.setAttribute("for", entry.name + "_input");
+                //labelEl.setAttribute("id", entry.name + "_label");
 
-
-                let labelEl = document.createElement('label');
-                labelEl.setAttribute("for", entry.name + "_input");
-                labelEl.setAttribute("id", entry.name + "_label");
                 nameEl.innerHTML = entry.name;
-
                 startDateEl.innerHTML = entry.startTime;
                 stopDateEl.innerHTML = entry.stopTime;
                 if (entry.enabled){
-                    labelEl.innerHTML = "Enabled";
-                    inputEl.checked = true;
+                    //labelEl.innerHTML = "Enabled";
+                    //inputEl.checked = true;
+                    enabledSpanEl.textContent = "\u2705 Enabled";
                 } else{
-                    labelEl.innerHTML = "Disabled";
-                    inputEl.checked = false;
+                    //labelEl.innerHTML = "Disabled";
+                    //inputEl.checked = false;
+                    enabledSpanEl.textContent = "Disabled";
                 }
                 //item.enabled ? labelEl.innerHTML = "Enabled" : labelEl.innerHTML = "Disabled";
-                enabledEl.appendChild(inputEl);
-                enabledEl.appendChild(labelEl);
+                //enabledEl.appendChild(inputEl);
+                //enabledEl.appendChild(labelEl);
 
                 rowEl.appendChild(selectEl);
                 rowEl.appendChild(nameEl);
@@ -84,8 +88,8 @@
         function changeElement(inputData, entrysList) {
             if(entrysList.length == 0) throw "Nothing to change in function chengeElement";
             for (let entry of entrysList){
-                let enabledEl = document.getElementById(entry + "_input");
-                let labelEl = document.getElementById(entry + "_label");
+                let enabledEl = document.getElementById(entry + "_enabledcell");
+                //let labelEl = document.getElementById(entry + "_label");
                 if (!enabledEl) throw `Element ${entry}_input not found`;
                 if (entrysList.length == 1){
                     let startTimeEl = document.getElementById(entry + "_starttimecell");
@@ -95,15 +99,16 @@
                     startTimeEl.innerHTML = inputData.startTime;
                     stopTimeEl.innerHTML = inputData.stopTime;
                 }
-                enabledEl.checked = inputData.enabled;
+                //enabledEl.checked = inputData.enabled;
                 if (inputData.enabled){
-                    labelEl.textContent = "Enabled"
+                    enabledEl.textContent = "\u2705 Enabled"
                 } else {
-                    labelEl.textContent = "Disabled"
+                    enabledEl.textContent = "Disabled"
                 }
             
             }
         }
+        
         function removeElementsFromHTML(namesSet) {
             const removedEntrysNames = Array.from(namesSet);
             for(let name of removedEntrysNames){
@@ -236,7 +241,7 @@
         }
         async function setAndDisableModalFields(namesSet){
             const namesArray = Array.from(namesSet);
-            let form = document.forms.inputNewEntry;
+            let form = document.forms.inputNewEntry; //присваиваем переменным значения элементов формы ввода модального окна
             let inputNameEl = form.elements.entryName;
             let inputStartTimeEl = form.elements.startTime;
             let inputStopTimeEl = form.elements.stopTime;
@@ -255,6 +260,7 @@
                 inputNameEl.disabled = true;
                 inputStartTimeEl.value = editEntry[0].startTime;
                 inputStopTimeEl.value = editEntry[0].stopTime;
+                inputEnabledEl.checked = editEntry[0].enabled;
             } else {
                 throw "Nothing selected";
             }
