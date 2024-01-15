@@ -1,8 +1,9 @@
 const fileReader = require('./filereader.js');
 const scheduler = require('./scheduler.js');
 const recordsFileReader = require('./recordsfilereader.js');
-const recordsFileDeleter = require('./recordsfiledeleter.js')
-exports.route = function (url, method, body,request,response){
+const recordsFileDeleter = require('./recordsfiledeleter.js');
+const auth = require('./auth.js');
+exports.route = function (url, method, body,request,response, user){
     console.log("router url:" + url);
     console.log("router method: " + method);
     console.log("router body: " + body);
@@ -18,6 +19,7 @@ exports.route = function (url, method, body,request,response){
                 scheduleJSON = result[1];
                 if (status == "ok"){
                     console.log ("router got response: " + status);
+
                     headers = {
                         'Content-Type': 'application/json'
                     }
@@ -33,6 +35,7 @@ exports.route = function (url, method, body,request,response){
             if (method == "POST"){
                 let result = scheduler.addScheduleEntry(body);
                 if (result == "ok"){
+                    auth.renewToken(user, response);
                     response.writeHead(204);
                     response.end();
                 } else {
@@ -45,6 +48,7 @@ exports.route = function (url, method, body,request,response){
             if (method == "POST"){          
                 let result = scheduler.modifyScheduleEntry(body);
                 if (result == "ok"){
+                    auth.renewToken(user, response);
                     response.writeHead(204);
                     response.end();
                 } else {
@@ -57,6 +61,7 @@ exports.route = function (url, method, body,request,response){
             if (method == "POST"){          
                 let result = scheduler.removeScheduleEntry(body);
                 if (result == "ok"){
+                    auth.renewToken(user, response);
                     response.writeHead(204);
                     response.end();
                 } else {
@@ -73,9 +78,11 @@ exports.route = function (url, method, body,request,response){
                 filelistJSON = JSON.stringify(result[1]);
                 if (status == "ok"){
                     console.log ("router got response: " + status);
+                    auth.renewToken(user, response);
                     headers = {
                         'Content-Type': 'application/json'
                     }
+
                     response.writeHead(200, headers);
                     response.end(filelistJSON);
                 } else {
@@ -89,6 +96,7 @@ exports.route = function (url, method, body,request,response){
             let dldPrefix = "./records/";
             let downloadPath = url.replace(/^\/downloads\//gi,dldPrefix);
             if (method == "GET"){
+                auth.renewToken(user, response);
                 fileReader.getFile(downloadPath, "downloads", response);
             }
             break; 
@@ -97,6 +105,7 @@ exports.route = function (url, method, body,request,response){
             if (method == "POST"){
                 let result = recordsFileDeleter.deleteRecord(body);
                 if (result == "ok"){
+                    auth.renewToken(user, response);
                     response.writeHead(204);
                     response.end();
                 } else {
@@ -105,16 +114,24 @@ exports.route = function (url, method, body,request,response){
                 }
             }
             break;
+        case "/unauthorized":
+            console.log("router: unathorized!");
+            let path = "/unauthorized/index.html";
+            fileReader.getFile(path, "pages", response, user);
+            break;
         default:
             if (!isPathWithFilename(url)){  //секция для страничек - view
                 url = url + "index.html";
             } 
+            if (!/((.css$)|(.js$))/i.test(url)){
+                auth.renewToken(user, response);
+            };
             if (method == "GET"){
                 if (isPathIsRootPath(url)){
                     let prefix = "/default";
                     url = prefix + url;
                 }
-                fileReader.getFile(url, "pages", response);
+                fileReader.getFile(url, "pages", response, user);
             }
             break;
    }

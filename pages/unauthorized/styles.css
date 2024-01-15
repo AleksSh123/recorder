@@ -1,0 +1,10 @@
+.inputFormClass{
+    border: 1px solid;
+    width: 300px;
+}
+body{
+    width: 800px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

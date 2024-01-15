@@ -2,7 +2,7 @@ const fs = require('fs');
 const pagesPrefix = "pages";
 
 
-exports.getFile = function (filePath, mode, response){
+exports.getFile = function (filePath, mode, response, user){
 
 
     //const basePath = "";
@@ -50,6 +50,7 @@ exports.getFile = function (filePath, mode, response){
             response.end();
             //throw err;
         } 
+        //headers['Set-Cookie'] = `user=${user}; Path=/`;
         response.writeHead(responseCode, headers);
         //console.log(data);
         response.end(data);

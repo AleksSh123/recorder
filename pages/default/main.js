@@ -1,6 +1,6 @@
        
         let selectedEntryNames = new Set();
-
+        //document.cookie = "token=123456";
 
 
         async function getSchedule() {
@@ -11,7 +11,8 @@
             if (response.ok) { 
                 json = await response.json();
             } else {
-                alert("Ошибка HTTP: " + response.status);
+                console.log(response.status);
+                //alert("Ошибка HTTP: " + response.status);
             }
             
             return json;
@@ -185,6 +186,13 @@
         }
         async function openSchedule(){
             let schedule = await getSchedule();
+            if (!schedule){
+
+            }
+            let user = getCookie("user");
+            displayUser(
+                Boolean(user) ? `Hello, ${user}!` : "Unathorized"
+            );
             displaySchedule(schedule);
 
         }
@@ -388,9 +396,14 @@
         }
         async function getAndHighlightRecording(){
             let schedule = await getSchedule();
-            for (let entry of schedule){
-                highlightEntry(entry);
+            if (schedule){
+                for (let entry of schedule){
+                    highlightEntry(entry);
+                }
+            } else {
+               // displayUser();
             }
+
         }
         function highlightEntry(entry){
             let rowEl = document.getElementById(entry.name + "Row");
@@ -402,9 +415,28 @@
             }
             console.log("tick");
         }
+        function displayUser(text){
+            let authString = document.getElementById("authString");
+            authString.textContent = text;
+        }
+        function getCookie(name){
+            let source = document.cookie;
+            if (source){
+                let arr = source.split(";");
+                for (let el of arr){
+                    let arr1 = el.split("=");
+                    if (name == arr1[0].trim()) {
+                        return arr1[1].trim();
+                    }
+                }
+                return undefined;
+            }
+
+        }
 
 
         openSchedule();
+        console.log(document.cookie);
         let updateTimer = setInterval(getAndHighlightRecording,2000);
 
         
