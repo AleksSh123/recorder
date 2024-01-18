@@ -119,6 +119,36 @@ exports.route = function (url, method, body,request,response, user){
             let path = "/unauthorized/index.html";
             fileReader.getFile(path, "pages", response, user);
             break;
+        case "/auth":
+            console.log("router: auth section");
+            if (method == "POST"){
+                console.log(`user: ${body.username}, password: ${body.password}`);
+                let result = auth.auth(body.username, body.password);
+                console.log (`router: result user: ${body.username}, pass: ${body.password}`);
+                if (result == "ok"){
+                    auth.renewToken(body.username, response);
+                    
+                    response.writeHead(204);
+                    response.end();
+                } else {
+                    response.writeHead(400,{'Content-Type': 'text/plain'});
+                    response.end(result);
+                }
+            } else
+            if (method == "GET"){
+                if (user){
+                    console.log("router: auth athorized!");
+                } else {
+                    console.log("router: unathorized!");
+                    let path = "/auth/index.html";
+                    fileReader.getFile(path, "pages", response, user);
+                }
+            } else {
+                response.writeHead(400,{'Content-Type': 'text/plain'});
+                response.end("Method is not GET/POST");
+            }
+
+            break;
         default:
             if (!isPathWithFilename(url)){  //секция для страничек - view
                 url = url + "index.html";

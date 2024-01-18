@@ -4,7 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Silver rain recorder</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        .inputFormClass{
+            border: 1px solid;
+            width: 300px;
+        }
+        body{
+            width: 800px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
 </head>
 <body>
     
@@ -44,6 +55,15 @@ async function sendLogin(){
         method: 'POST',
         body: requestJSON
     });
+    if (response.ok){
+        document.location.href = "/schedule.htm";
+    } else {
+        alert ("wrong user or password!");
+        form.reset();
+    }
+
+    
+
     //debugger;
 }
 

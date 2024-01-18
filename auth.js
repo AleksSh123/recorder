@@ -19,21 +19,37 @@ exports.renewToken = function(user, response){
             writeUsers();
         }
     } */
+    if (user){
+        let newToken = generateNewToken();
+        users[user].token = newToken;
+        writeUsers();
+        response.setHeader('Set-Cookie', [`user=${user}; Path=/`, `token=${newToken}; Path=/`]);
+        //console.log(`auth: user - ${user}`)
+        //console.log(`auth: new token - ${newToken}`)
+        let headers = response.getHeaders();
+        console.log("auth: renew token for user " + user );
+        console.dir(headers);
+    } else {
+        console.log("auth: no user");
+    }
 
-    let newToken = generateNewToken();
-    users[user].token = newToken;
-    writeUsers();
-    response.setHeader('Set-Cookie', `user=${user}; Path=/`);
-    response.setHeader('Set-Cookie', `token=${newToken}; Path=/`);
-    console.log(`auth: user - ${user}`)
-    console.log(`auth: new token - ${newToken}`)
     
 }
 
 exports.deleteToken = function(user){
 
 }
+exports.auth = function(userName, pass){
 
+    for (let user in users){
+        if (user == userName){
+            if (users[user].password == pass){
+                return "ok";
+            };
+        }
+    }
+    return "user not found";
+}
 function writeUsers(){
     const data = JSON.stringify(users);
     fs.writeFile(usersFilename, data, (err) => {

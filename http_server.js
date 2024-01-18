@@ -36,7 +36,12 @@ let server = new http.Server(function(request,response){
     user = auth.getUserByToken(coockies.token)
     if ((!coockies) || (!user)){
         console.log("http_server: unauthorized!");
-        request.url = "/unauthorized";
+        if ((request.url != "/auth") && (request.url != "/favicon.ico")) {
+        response.writeHead(302, {'Location': '/auth'});
+        response.end();
+        return;
+        } 
+        
 /*         response.writeHead(403);
         response.end("403 Unathorized");
         console.log("http_server: response ended with code 403"); */
