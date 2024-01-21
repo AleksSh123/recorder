@@ -23,7 +23,7 @@ exports.renewToken = function(user, response){
         let newToken = generateNewToken();
         users[user].token = newToken;
         writeUsers();
-        response.setHeader('Set-Cookie', [`user=${user}; Path=/`, `token=${newToken}; Path=/`]);
+        response.setHeader('Set-Cookie', [`user=${user}; Path=/`, `token=${newToken}; Path=/; max-age=300`]);
         //console.log(`auth: user - ${user}`)
         //console.log(`auth: new token - ${newToken}`)
         let headers = response.getHeaders();

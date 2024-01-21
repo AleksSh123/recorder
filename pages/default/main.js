@@ -1,3 +1,5 @@
+
+
        
         let selectedEntryNames = new Set();
         //document.cookie = "token=123456";
@@ -5,10 +7,10 @@
 
         async function getSchedule() {
             let url = location.origin + "/get_schedule"
-            let response = await fetch(url);
+            let response = await makeRequest(url);
             
             let json;
-            if (response.ok) { 
+            if (response?.ok) { 
                 json = await response.json();
             } else {
                 console.log(response.status);
@@ -304,7 +306,7 @@
                 method: method,
                 body: body
             }
-            let response = await fetch(url, params);
+            let response = await makeRequest(url, params);
             return response;
         }
         
@@ -359,8 +361,8 @@
                 body: body
             }
             let url = location.origin + "/add_schedule_entry"
-            let response = await fetch(url, params);
-            if (response.status != 204){
+            let response = await makeRequest(url, params);
+            if (response?.status != 204){
                 let errorText = await response.text();
                 displayError(errorText);
                 return false;
@@ -382,8 +384,8 @@
                 headers: headers,
                 body: body
             }
-            let response = await fetch(url, params);
-            if (response.status != 204){
+            let response = await makeRequest(url, params);
+            if (response?.status != 204){
                 let errorText = await response.text();
                 displayError(errorText);
                 return false;
@@ -432,6 +434,20 @@
                 return undefined;
             }
 
+        }
+        async function makeRequest(url, params = null){
+            let response;
+            try {
+                response = await fetch(url, params);
+            } catch(err){
+                throw err;
+            }
+            if (response?.status == 401){
+                window.location.href = "/auth/index.html";
+                return false;
+            } 
+            return response;
+            
         }
 
 
