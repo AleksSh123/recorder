@@ -33,11 +33,19 @@
         .passwordCaptionClass{
             width: 5rem;
         }
+        h3{
+            margin-bottom: 0.5rem;
+        }
+        #error_message{
+            visibility: hidden;
+            color: red;
+        }
     </style>
 </head>
 <body>
     
     <h3>Please login</h3>
+    <div id="error_message">error</div>
     <form class="inputFormClass" action="/auth" method="POST" name="userLoginForm">
         <div>
             <div class="inputTextClass">
@@ -48,14 +56,14 @@
                  </div>
                  <div>
                     <div class="passwordCaptionClass">Password:</div>
-                    <div><input type="text" name="password"></div>
+                    <div><input type="password" name="password"></div>
                      
                  </div>
             </div>
 
             <div class="inputButtonClass">
                 <input type="button" value="OK" onclick="sendLogin()">
-                <input type="button" value="Cancel">
+                <input type="button" value="Cancel" onclick="resetLogin()">
             </div>
 
         </div>
@@ -83,15 +91,28 @@ async function sendLogin(){
     if (response.ok){
         document.location.href = "/schedule.htm";
     } else {
-        alert ("wrong user or password!");
+        //alert ("wrong user or password!");
+        displayError("wrong user or password!");
         form.reset();
     }
-
-    
-
-    //debugger;
 }
 
+function resetLogin(){
+    let form = document.forms.userLoginForm;
+    unDisplayError();
+    form.reset();
+}
+
+function displayError(errText){
+    document.getElementById("error_message").textContent = errText;
+    document.getElementById("error_message").style.visibility = "visible";
+}
+
+function unDisplayError(){
+    document.getElementById("error_message").style.visibility = "hidden";
+}
+
+unDisplayError();
 //alert("start!");
 </script>
 </body>

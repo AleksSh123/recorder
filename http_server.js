@@ -45,25 +45,35 @@ let server = new http.Server(function(request,response){
 
 
 
-    if (request.method == 'POST'){
+    //if (request.method == 'POST'){
+    //console.log("http_server: ['POST','PUT','DELETE','PATCH'].includes(request.method) is " + ['POST','PUT','DELETE','PATCH'].includes(request.method))
+    if (['POST','PUT','DELETE','PATCH'].includes(request.method)){
         request.on('data', (chunk) => {
             chunkArray.push(chunk.toString());
-            //console.log(chunk.toString());
+            console.log(chunk.toString());
         });
         request.on('end', () => {
             if (chunkArray.length !=0){
                 body = chunkArray.join("");
-                body = JSON.parse(body);
+                try{
+                    body = JSON.parse(body);
+                } catch(err){
+                    body = null;
+                    console.error("http_server: cannot parse body with error: " + err);
+                }
+    
             } else {
                 body = null;
             }
             console.log ("http_server: body of request is: " + body);
-            router.route(request.url, request.method, body, request, response, user);
+            router.route(decodeURI(request.url), request.method, body, request, response, user);
         });
 
     } else {
-        router.route(decodeURI(request.url), request.method, null, request, response, user);
+        body = null;
+        router.route(decodeURI(request.url), request.method, body, request, response, user);
     }
+
 
 
 })
