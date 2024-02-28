@@ -19,14 +19,14 @@
         </div>
 
         <div id="recordListContainer" class="recordListContainerClass">
-            <div class="headerRowClass" >
-                <input type="checkbox" id="selectAllInput" onchange="setAllSelectedStatus(this)">
+            <div class="rowClass headerRowClass" >
+                <input type="checkbox" class="selectCellClass" id="selectAllInput" onchange="setAllSelectedStatus(this)">
                 <div class="nameCellClass" id="">Имя задания</div>
-                <div class="timeCellClass" id="">Время старта</div>
-                <div class="timeCellClass" id="">Длительность</div>
-                <div id="filenameCell">Имя файла</div>
-                <div></div>
-                <div id="sizeCell">Размер файла</div>
+                <div class="startTimeCellClass" id="">Время старта</div>
+                <div class="durationCellClass" id="">Длит<wbr>ельность</div>
+                <div id="filenameCell" class="filenameCellClass">Имя файла</div>
+                <div class="downloadLinkCellClass"></div>
+                <div id="sizeCell" class="sizeCellClass">Размер файла</div>
             </div>
 
         </div>

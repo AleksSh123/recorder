@@ -58,6 +58,7 @@ function addElement(entry, containerElement){
         selectEl.setAttribute("type","checkbox");
         selectEl.id = id + "-select";
         selectEl.setAttribute("onchange","setSelectedStatus(this)");
+        selectEl.classList.add("selectCellClass");
 
         let rowEl = document.createElement('div');
         rowEl.id = id + "-row";
@@ -68,26 +69,30 @@ function addElement(entry, containerElement){
         nameEl.id = id + "-namecell";
 
         let startDateEl = document.createElement('div');
-        startDateEl.classList.add("timeCellClass");
+        startDateEl.classList.add("startTimeCellClass");
         startDateEl.id = id + "-starttimecell"
 
         let stopDateEl = document.createElement('div');
-        stopDateEl.classList.add("timeCellClass");
+        stopDateEl.classList.add("durationCellClass");
         stopDateEl.id = id + "-stoptimecell"
 
         
 
         let filenameEl = document.createElement('div');
         filenameEl.id = id + "-filenamecell";
+        filenameEl.classList.add("filenameCellClass");
         //let filenameRefEl = document.createElement('a');
         //filenameRefEl.href = location.origin + "/downloads/" + entry.filename;
         //filenameRefEl.innerText = entry.filename;
         //filenameEl.appendChild(filenameRefEl);
 
-
+        let downloadCellEl = document.createElement('div');
+        downloadCellEl.classList.add("downloadLinkCellClass");
         let downloadLinkEl = document.createElement('a');
         downloadLinkEl.href = location.origin + "/downloads/" + entry.filename;
         downloadLinkEl.innerText = "\u2B07";
+        downloadCellEl.appendChild(downloadLinkEl);
+        
 
         let sizeEl = document.createElement("div");
         sizeEl.id = id + "-size";
@@ -109,7 +114,7 @@ function addElement(entry, containerElement){
         rowEl.appendChild(startDateEl);
         rowEl.appendChild(stopDateEl);
         rowEl.appendChild(filenameEl);
-        rowEl.appendChild(downloadLinkEl);
+        rowEl.appendChild(downloadCellEl);
         rowEl.appendChild(sizeEl);
 
         containerElement.appendChild(rowEl);
