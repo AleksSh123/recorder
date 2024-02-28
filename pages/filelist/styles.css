@@ -140,4 +140,7 @@
         padding-left: 2px;
         padding-right: 2px;    
     }
+    .downloadLinkCellClass{
+        -webkit-text-size-adjust: 70%;
+    }
 }
