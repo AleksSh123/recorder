@@ -6,7 +6,7 @@ const auth = require('./auth.js');
 exports.route = function (url, method, body,request,response, user){
     console.log("router url:" + url);
     console.log("router method: " + method);
-    console.log("router body: " + body);
+    console.log("router body: " + JSON.stringify(body));
 
 
     switch (url){
@@ -111,7 +111,8 @@ exports.route = function (url, method, body,request,response, user){
 
             console.log("router: auth section");
             if (method == "POST"){
-                console.log(`user: ${body.username}, password: ${body.password}`);
+                console.log(`recieved user: ${body.username}, password: ${body.password}`);
+                body.username = body.username.toLowerCase();
                 let result = auth.auth(body.username, body.password);
                 console.log (`router: result user: ${body.username}, pass: ${body.password}`);
                 if (result == "ok"){

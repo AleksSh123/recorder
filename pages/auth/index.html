@@ -62,7 +62,7 @@
             </div>
 
             <div class="inputButtonClass">
-                <input type="button" value="OK" onclick="sendLogin()">
+                <input type="submit" value="OK" onclick="sendLogin(event)">
                 <input type="button" value="Cancel" onclick="resetLogin()">
             </div>
 
@@ -70,7 +70,9 @@
     </form>
 <script>
     
-async function sendLogin(){
+async function sendLogin(event){
+    //console.log(event);
+    event.preventDefault();
     let form = document.forms.userLoginForm;
     let user = form.elements.login.value;
     let pass = form.elements.password.value;
@@ -95,6 +97,7 @@ async function sendLogin(){
         displayError("wrong user or password!");
         form.reset();
     }
+    return false;
 }
 
 function resetLogin(){

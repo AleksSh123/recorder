@@ -58,14 +58,17 @@ let server = new http.Server(function(request,response){
                 try{
                     body = JSON.parse(body);
                 } catch(err){
-                    body = null;
+                    //body = null;
                     console.error("http_server: cannot parse body with error: " + err);
+                    response.writeHead(406,{'Content-Type': 'text/plain'});
+                    response.end(err.message);
+                    return;
                 }
     
             } else {
                 body = null;
             }
-            console.log ("http_server: body of request is: " + body);
+            console.log ("http_server: body of request is: " + JSON.stringify(body));
             router.route(decodeURI(request.url), request.method, body, request, response, user);
         });
 
